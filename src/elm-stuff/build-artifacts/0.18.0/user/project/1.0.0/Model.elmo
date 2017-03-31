@@ -1,0 +1,6 @@
+var _user$project$Model$Model = F5(
+	function (a, b, c, d, e) {
+		return {size: a, x: b, code: c, color: d, message: e};
+	});
+var _user$project$Model$Red = {ctor: 'Red'};
+var _user$project$Model$Blue = {ctor: 'Blue'};

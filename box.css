@@ -1,0 +1,17 @@
+body {
+  background: url(/assets/bg.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.box {
+    position:absolute;
+    transition: width .15s ease-out;
+    transition: background-color .5s ease-out;
+    transition: width .5s ease-out;
+    transition: height .5s ease-out;
+    transition: margin-left .5s ease-out;
+    transition: margin-top .5s ease-out;
+    top:50%;
+}
