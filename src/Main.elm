@@ -4,6 +4,7 @@ import View exposing (..)
 import Html exposing (..)
 import Update exposing (..)
 import Subscriptions exposing (..)
+import Set exposing (Set)
 
 main =
   Html.program
@@ -14,7 +15,22 @@ main =
     }
 
 
-initialModel = Model 50 100 0 Blue ""
+initialModel = {
+          size = 50
+        , humidity = 0
+        , code = 0
+        , color = Blue
+        , message = ""
+        , pos = Pos 120 150
+        , keysDown = Set.empty
+        , raindrops = []
+        , gates =  [{
+              x = 100
+            , contactType = Avoid
+            , openingStart = 40
+            , openingEnd = 150
+        }]
+    }
 
 init : (Model, Cmd Msg)
 init = initialModel ! [Cmd.none]

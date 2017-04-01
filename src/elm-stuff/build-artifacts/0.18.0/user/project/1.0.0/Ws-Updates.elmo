@@ -1,35 +1,35 @@
+var _user$project$Ws_Updates$inner = F2(
+	function (s, model) {
+		var _p0 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Ws_CustomJson_Decoders$decodeIncomingWsMessage, s);
+		if (_p0.ctor === 'Err') {
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					message: _elm_lang$core$Basics$toString(_p0._0)
+				});
+		} else {
+			var _p1 = _p0._0;
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					size: _p1.data.size,
+					pos: _elm_lang$core$Basics$toString(_p1.data.vector)
+				});
+		}
+	});
+var _user$project$Ws_Updates$updateModelWithWsData = F2(
+	function (s, model) {
+		var m = A2(_user$project$Ws_Updates$inner, s, model);
+		return m;
+	});
 var _user$project$Ws_Updates$updateSize = F2(
 	function (wsData, model) {
-		var _p0 = A2(_elm_lang$core$Json_Decode$decodeString, _elm_lang$core$Json_Decode$int, wsData);
-		if (_p0.ctor === 'Err') {
+		var _p2 = A2(_elm_lang$core$Json_Decode$decodeString, _elm_lang$core$Json_Decode$int, wsData);
+		if (_p2.ctor === 'Err') {
 			return model;
 		} else {
 			return _elm_lang$core$Native_Utils.update(
 				model,
-				{size: _p0._0});
-		}
-	});
-var _user$project$Ws_Updates$WsData = F2(
-	function (a, b) {
-		return {name: a, data: b};
-	});
-var _user$project$Ws_Updates$wsDataDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_user$project$Ws_Updates$WsData,
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'data', _elm_lang$core$Json_Decode$string));
-var _user$project$Ws_Updates$updateModelWithWsData = F2(
-	function (s, model) {
-		var _p1 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Ws_Updates$wsDataDecoder, s);
-		if (_p1.ctor === 'Err') {
-			return model;
-		} else {
-			var _p3 = _p1._0;
-			var _p2 = _p3.name;
-			if (_p2 === 'size') {
-				return A2(_user$project$Ws_Updates$updateSize, _p3.data, model);
-			} else {
-				return model;
-			}
+				{size: _p2._0});
 		}
 	});

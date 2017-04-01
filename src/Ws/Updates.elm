@@ -1,25 +1,14 @@
 module Ws.Updates exposing (updateModelWithWsData)
-
-
+import Ws.CustomJson.Decoders exposing (..)
+import Model exposing (..)
 import Json.Decode exposing (..)
 
-updateSize wsData model =
-    case decodeString int wsData of
-    Err _ -> model
-    Ok size -> {model | size = size }
-
-type alias WsData =
-  { name : String
-  , data  : String 
-  }
-
-
-wsDataDecoder = map2 WsData (field "name" string) (field "data" string)
-
+updateModelWithWsData : String -> Model -> Model
 updateModelWithWsData s model =
-    case decodeString wsDataDecoder s  of  
-    Err _ -> model                                                                                                                                                            
-    Ok  ws ->
-        case ws.name of
-        "size" -> updateSize ws.data model
-        _ -> model
+    case decodeString decodeIncomingWsMessage s  of  
+    Err e -> { model | message = (toString e) ++ s }                                                                                                                                                
+    Ok  ws -> { model |
+          size = ws.data.size
+        , pos = (Pos (floor ws.data.vector.x) (floor ws.data.vector.y))
+        , humidity = ws.data.humidity
+        }

@@ -6173,6 +6173,516 @@ var _elm_lang$core$Tuple$first = function (_p6) {
 	return _p7._0;
 };
 
+var _elm_lang$core$Random$onSelfMsg = F3(
+	function (_p1, _p0, seed) {
+		return _elm_lang$core$Task$succeed(seed);
+	});
+var _elm_lang$core$Random$magicNum8 = 2147483562;
+var _elm_lang$core$Random$range = function (_p2) {
+	return {ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Random$magicNum8};
+};
+var _elm_lang$core$Random$magicNum7 = 2147483399;
+var _elm_lang$core$Random$magicNum6 = 2147483563;
+var _elm_lang$core$Random$magicNum5 = 3791;
+var _elm_lang$core$Random$magicNum4 = 40692;
+var _elm_lang$core$Random$magicNum3 = 52774;
+var _elm_lang$core$Random$magicNum2 = 12211;
+var _elm_lang$core$Random$magicNum1 = 53668;
+var _elm_lang$core$Random$magicNum0 = 40014;
+var _elm_lang$core$Random$step = F2(
+	function (_p3, seed) {
+		var _p4 = _p3;
+		return _p4._0(seed);
+	});
+var _elm_lang$core$Random$onEffects = F3(
+	function (router, commands, seed) {
+		var _p5 = commands;
+		if (_p5.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(seed);
+		} else {
+			var _p6 = A2(_elm_lang$core$Random$step, _p5._0._0, seed);
+			var value = _p6._0;
+			var newSeed = _p6._1;
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p7) {
+					return A3(_elm_lang$core$Random$onEffects, router, _p5._1, newSeed);
+				},
+				A2(_elm_lang$core$Platform$sendToApp, router, value));
+		}
+	});
+var _elm_lang$core$Random$listHelp = F4(
+	function (list, n, generate, seed) {
+		listHelp:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$List$reverse(list),
+					_1: seed
+				};
+			} else {
+				var _p8 = generate(seed);
+				var value = _p8._0;
+				var newSeed = _p8._1;
+				var _v2 = {ctor: '::', _0: value, _1: list},
+					_v3 = n - 1,
+					_v4 = generate,
+					_v5 = newSeed;
+				list = _v2;
+				n = _v3;
+				generate = _v4;
+				seed = _v5;
+				continue listHelp;
+			}
+		}
+	});
+var _elm_lang$core$Random$minInt = -2147483648;
+var _elm_lang$core$Random$maxInt = 2147483647;
+var _elm_lang$core$Random$iLogBase = F2(
+	function (b, i) {
+		return (_elm_lang$core$Native_Utils.cmp(i, b) < 0) ? 1 : (1 + A2(_elm_lang$core$Random$iLogBase, b, (i / b) | 0));
+	});
+var _elm_lang$core$Random$command = _elm_lang$core$Native_Platform.leaf('Random');
+var _elm_lang$core$Random$Generator = function (a) {
+	return {ctor: 'Generator', _0: a};
+};
+var _elm_lang$core$Random$list = F2(
+	function (n, _p9) {
+		var _p10 = _p9;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				return A4(
+					_elm_lang$core$Random$listHelp,
+					{ctor: '[]'},
+					n,
+					_p10._0,
+					seed);
+			});
+	});
+var _elm_lang$core$Random$map = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p13 = _p12._0(seed0);
+				var a = _p13._0;
+				var seed1 = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: func(a),
+					_1: seed1
+				};
+			});
+	});
+var _elm_lang$core$Random$map2 = F3(
+	function (func, _p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p18 = _p16._0(seed0);
+				var a = _p18._0;
+				var seed1 = _p18._1;
+				var _p19 = _p17._0(seed1);
+				var b = _p19._0;
+				var seed2 = _p19._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(func, a, b),
+					_1: seed2
+				};
+			});
+	});
+var _elm_lang$core$Random$pair = F2(
+	function (genA, genB) {
+		return A3(
+			_elm_lang$core$Random$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			genA,
+			genB);
+	});
+var _elm_lang$core$Random$map3 = F4(
+	function (func, _p22, _p21, _p20) {
+		var _p23 = _p22;
+		var _p24 = _p21;
+		var _p25 = _p20;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p26 = _p23._0(seed0);
+				var a = _p26._0;
+				var seed1 = _p26._1;
+				var _p27 = _p24._0(seed1);
+				var b = _p27._0;
+				var seed2 = _p27._1;
+				var _p28 = _p25._0(seed2);
+				var c = _p28._0;
+				var seed3 = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A3(func, a, b, c),
+					_1: seed3
+				};
+			});
+	});
+var _elm_lang$core$Random$map4 = F5(
+	function (func, _p32, _p31, _p30, _p29) {
+		var _p33 = _p32;
+		var _p34 = _p31;
+		var _p35 = _p30;
+		var _p36 = _p29;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p37 = _p33._0(seed0);
+				var a = _p37._0;
+				var seed1 = _p37._1;
+				var _p38 = _p34._0(seed1);
+				var b = _p38._0;
+				var seed2 = _p38._1;
+				var _p39 = _p35._0(seed2);
+				var c = _p39._0;
+				var seed3 = _p39._1;
+				var _p40 = _p36._0(seed3);
+				var d = _p40._0;
+				var seed4 = _p40._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A4(func, a, b, c, d),
+					_1: seed4
+				};
+			});
+	});
+var _elm_lang$core$Random$map5 = F6(
+	function (func, _p45, _p44, _p43, _p42, _p41) {
+		var _p46 = _p45;
+		var _p47 = _p44;
+		var _p48 = _p43;
+		var _p49 = _p42;
+		var _p50 = _p41;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p51 = _p46._0(seed0);
+				var a = _p51._0;
+				var seed1 = _p51._1;
+				var _p52 = _p47._0(seed1);
+				var b = _p52._0;
+				var seed2 = _p52._1;
+				var _p53 = _p48._0(seed2);
+				var c = _p53._0;
+				var seed3 = _p53._1;
+				var _p54 = _p49._0(seed3);
+				var d = _p54._0;
+				var seed4 = _p54._1;
+				var _p55 = _p50._0(seed4);
+				var e = _p55._0;
+				var seed5 = _p55._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A5(func, a, b, c, d, e),
+					_1: seed5
+				};
+			});
+	});
+var _elm_lang$core$Random$andThen = F2(
+	function (callback, _p56) {
+		var _p57 = _p56;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p58 = _p57._0(seed);
+				var result = _p58._0;
+				var newSeed = _p58._1;
+				var _p59 = callback(result);
+				var genB = _p59._0;
+				return genB(newSeed);
+			});
+	});
+var _elm_lang$core$Random$State = F2(
+	function (a, b) {
+		return {ctor: 'State', _0: a, _1: b};
+	});
+var _elm_lang$core$Random$initState = function (seed) {
+	var s = A2(_elm_lang$core$Basics$max, seed, 0 - seed);
+	var q = (s / (_elm_lang$core$Random$magicNum6 - 1)) | 0;
+	var s2 = A2(_elm_lang$core$Basics_ops['%'], q, _elm_lang$core$Random$magicNum7 - 1);
+	var s1 = A2(_elm_lang$core$Basics_ops['%'], s, _elm_lang$core$Random$magicNum6 - 1);
+	return A2(_elm_lang$core$Random$State, s1 + 1, s2 + 1);
+};
+var _elm_lang$core$Random$next = function (_p60) {
+	var _p61 = _p60;
+	var _p63 = _p61._1;
+	var _p62 = _p61._0;
+	var k2 = (_p63 / _elm_lang$core$Random$magicNum3) | 0;
+	var rawState2 = (_elm_lang$core$Random$magicNum4 * (_p63 - (k2 * _elm_lang$core$Random$magicNum3))) - (k2 * _elm_lang$core$Random$magicNum5);
+	var newState2 = (_elm_lang$core$Native_Utils.cmp(rawState2, 0) < 0) ? (rawState2 + _elm_lang$core$Random$magicNum7) : rawState2;
+	var k1 = (_p62 / _elm_lang$core$Random$magicNum1) | 0;
+	var rawState1 = (_elm_lang$core$Random$magicNum0 * (_p62 - (k1 * _elm_lang$core$Random$magicNum1))) - (k1 * _elm_lang$core$Random$magicNum2);
+	var newState1 = (_elm_lang$core$Native_Utils.cmp(rawState1, 0) < 0) ? (rawState1 + _elm_lang$core$Random$magicNum6) : rawState1;
+	var z = newState1 - newState2;
+	var newZ = (_elm_lang$core$Native_Utils.cmp(z, 1) < 0) ? (z + _elm_lang$core$Random$magicNum8) : z;
+	return {
+		ctor: '_Tuple2',
+		_0: newZ,
+		_1: A2(_elm_lang$core$Random$State, newState1, newState2)
+	};
+};
+var _elm_lang$core$Random$split = function (_p64) {
+	var _p65 = _p64;
+	var _p68 = _p65._1;
+	var _p67 = _p65._0;
+	var _p66 = _elm_lang$core$Tuple$second(
+		_elm_lang$core$Random$next(_p65));
+	var t1 = _p66._0;
+	var t2 = _p66._1;
+	var new_s2 = _elm_lang$core$Native_Utils.eq(_p68, 1) ? (_elm_lang$core$Random$magicNum7 - 1) : (_p68 - 1);
+	var new_s1 = _elm_lang$core$Native_Utils.eq(_p67, _elm_lang$core$Random$magicNum6 - 1) ? 1 : (_p67 + 1);
+	return {
+		ctor: '_Tuple2',
+		_0: A2(_elm_lang$core$Random$State, new_s1, t2),
+		_1: A2(_elm_lang$core$Random$State, t1, new_s2)
+	};
+};
+var _elm_lang$core$Random$Seed = function (a) {
+	return {ctor: 'Seed', _0: a};
+};
+var _elm_lang$core$Random$int = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (_p69) {
+				var _p70 = _p69;
+				var _p75 = _p70._0;
+				var base = 2147483561;
+				var f = F3(
+					function (n, acc, state) {
+						f:
+						while (true) {
+							var _p71 = n;
+							if (_p71 === 0) {
+								return {ctor: '_Tuple2', _0: acc, _1: state};
+							} else {
+								var _p72 = _p75.next(state);
+								var x = _p72._0;
+								var nextState = _p72._1;
+								var _v27 = n - 1,
+									_v28 = x + (acc * base),
+									_v29 = nextState;
+								n = _v27;
+								acc = _v28;
+								state = _v29;
+								continue f;
+							}
+						}
+					});
+				var _p73 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p73._0;
+				var hi = _p73._1;
+				var k = (hi - lo) + 1;
+				var n = A2(_elm_lang$core$Random$iLogBase, base, k);
+				var _p74 = A3(f, n, 1, _p75.state);
+				var v = _p74._0;
+				var nextState = _p74._1;
+				return {
+					ctor: '_Tuple2',
+					_0: lo + A2(_elm_lang$core$Basics_ops['%'], v, k),
+					_1: _elm_lang$core$Random$Seed(
+						_elm_lang$core$Native_Utils.update(
+							_p75,
+							{state: nextState}))
+				};
+			});
+	});
+var _elm_lang$core$Random$bool = A2(
+	_elm_lang$core$Random$map,
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		})(1),
+	A2(_elm_lang$core$Random$int, 0, 1));
+var _elm_lang$core$Random$float = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p76 = A2(
+					_elm_lang$core$Random$step,
+					A2(_elm_lang$core$Random$int, _elm_lang$core$Random$minInt, _elm_lang$core$Random$maxInt),
+					seed);
+				var number = _p76._0;
+				var newSeed = _p76._1;
+				var negativeOneToOne = _elm_lang$core$Basics$toFloat(number) / _elm_lang$core$Basics$toFloat(_elm_lang$core$Random$maxInt - _elm_lang$core$Random$minInt);
+				var _p77 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p77._0;
+				var hi = _p77._1;
+				var scaled = ((lo + hi) / 2) + ((hi - lo) * negativeOneToOne);
+				return {ctor: '_Tuple2', _0: scaled, _1: newSeed};
+			});
+	});
+var _elm_lang$core$Random$initialSeed = function (n) {
+	return _elm_lang$core$Random$Seed(
+		{
+			state: _elm_lang$core$Random$initState(n),
+			next: _elm_lang$core$Random$next,
+			split: _elm_lang$core$Random$split,
+			range: _elm_lang$core$Random$range
+		});
+};
+var _elm_lang$core$Random$init = A2(
+	_elm_lang$core$Task$andThen,
+	function (t) {
+		return _elm_lang$core$Task$succeed(
+			_elm_lang$core$Random$initialSeed(
+				_elm_lang$core$Basics$round(t)));
+	},
+	_elm_lang$core$Time$now);
+var _elm_lang$core$Random$Generate = function (a) {
+	return {ctor: 'Generate', _0: a};
+};
+var _elm_lang$core$Random$generate = F2(
+	function (tagger, generator) {
+		return _elm_lang$core$Random$command(
+			_elm_lang$core$Random$Generate(
+				A2(_elm_lang$core$Random$map, tagger, generator)));
+	});
+var _elm_lang$core$Random$cmdMap = F2(
+	function (func, _p78) {
+		var _p79 = _p78;
+		return _elm_lang$core$Random$Generate(
+			A2(_elm_lang$core$Random$map, func, _p79._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Random'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Random$init, onEffects: _elm_lang$core$Random$onEffects, onSelfMsg: _elm_lang$core$Random$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Random$cmdMap};
+
+var _elm_lang$core$Set$foldr = F3(
+	function (f, b, _p0) {
+		var _p1 = _p0;
+		return A3(
+			_elm_lang$core$Dict$foldr,
+			F3(
+				function (k, _p2, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p1._0);
+	});
+var _elm_lang$core$Set$foldl = F3(
+	function (f, b, _p3) {
+		var _p4 = _p3;
+		return A3(
+			_elm_lang$core$Dict$foldl,
+			F3(
+				function (k, _p5, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p4._0);
+	});
+var _elm_lang$core$Set$toList = function (_p6) {
+	var _p7 = _p6;
+	return _elm_lang$core$Dict$keys(_p7._0);
+};
+var _elm_lang$core$Set$size = function (_p8) {
+	var _p9 = _p8;
+	return _elm_lang$core$Dict$size(_p9._0);
+};
+var _elm_lang$core$Set$member = F2(
+	function (k, _p10) {
+		var _p11 = _p10;
+		return A2(_elm_lang$core$Dict$member, k, _p11._0);
+	});
+var _elm_lang$core$Set$isEmpty = function (_p12) {
+	var _p13 = _p12;
+	return _elm_lang$core$Dict$isEmpty(_p13._0);
+};
+var _elm_lang$core$Set$Set_elm_builtin = function (a) {
+	return {ctor: 'Set_elm_builtin', _0: a};
+};
+var _elm_lang$core$Set$empty = _elm_lang$core$Set$Set_elm_builtin(_elm_lang$core$Dict$empty);
+var _elm_lang$core$Set$singleton = function (k) {
+	return _elm_lang$core$Set$Set_elm_builtin(
+		A2(
+			_elm_lang$core$Dict$singleton,
+			k,
+			{ctor: '_Tuple0'}));
+};
+var _elm_lang$core$Set$insert = F2(
+	function (k, _p14) {
+		var _p15 = _p14;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A3(
+				_elm_lang$core$Dict$insert,
+				k,
+				{ctor: '_Tuple0'},
+				_p15._0));
+	});
+var _elm_lang$core$Set$fromList = function (xs) {
+	return A3(_elm_lang$core$List$foldl, _elm_lang$core$Set$insert, _elm_lang$core$Set$empty, xs);
+};
+var _elm_lang$core$Set$map = F2(
+	function (f, s) {
+		return _elm_lang$core$Set$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				f,
+				_elm_lang$core$Set$toList(s)));
+	});
+var _elm_lang$core$Set$remove = F2(
+	function (k, _p16) {
+		var _p17 = _p16;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$remove, k, _p17._0));
+	});
+var _elm_lang$core$Set$union = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$union, _p20._0, _p21._0));
+	});
+var _elm_lang$core$Set$intersect = F2(
+	function (_p23, _p22) {
+		var _p24 = _p23;
+		var _p25 = _p22;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$intersect, _p24._0, _p25._0));
+	});
+var _elm_lang$core$Set$diff = F2(
+	function (_p27, _p26) {
+		var _p28 = _p27;
+		var _p29 = _p26;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$diff, _p28._0, _p29._0));
+	});
+var _elm_lang$core$Set$filter = F2(
+	function (p, _p30) {
+		var _p31 = _p30;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(
+				_elm_lang$core$Dict$filter,
+				F2(
+					function (k, _p32) {
+						return p(k);
+					}),
+				_p31._0));
+	});
+var _elm_lang$core$Set$partition = F2(
+	function (p, _p33) {
+		var _p34 = _p33;
+		var _p35 = A2(
+			_elm_lang$core$Dict$partition,
+			F2(
+				function (k, _p36) {
+					return p(k);
+				}),
+			_p34._0);
+		var p1 = _p35._0;
+		var p2 = _p35._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Set$Set_elm_builtin(p1),
+			_1: _elm_lang$core$Set$Set_elm_builtin(p2)
+		};
+	});
+
 var _elm_lang$dom$Native_Dom = function() {
 
 var fakeNode = {
@@ -9566,21 +10076,174 @@ var _elm_lang$websocket$WebSocket$onSelfMsg = F3(
 	});
 _elm_lang$core$Native_Platform.effectManagers['WebSocket'] = {pkg: 'elm-lang/websocket', init: _elm_lang$websocket$WebSocket$init, onEffects: _elm_lang$websocket$WebSocket$onEffects, onSelfMsg: _elm_lang$websocket$WebSocket$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$websocket$WebSocket$cmdMap, subMap: _elm_lang$websocket$WebSocket$subMap};
 
-var _user$project$Model$Model = F5(
-	function (a, b, c, d, e) {
-		return {size: a, x: b, code: c, color: d, message: e};
+var _user$project$Model$Raindrop = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _user$project$Model$Pos = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _user$project$Model$Gate = F4(
+	function (a, b, c, d) {
+		return {x: a, contactType: b, openingStart: c, openingEnd: d};
+	});
+var _user$project$Model$Model = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {size: a, humidity: b, code: c, color: d, message: e, pos: f, keysDown: g, raindrops: h, gates: i};
 	});
 var _user$project$Model$Red = {ctor: 'Red'};
 var _user$project$Model$Blue = {ctor: 'Blue'};
+var _user$project$Model$Hit = {ctor: 'Hit'};
+var _user$project$Model$Avoid = {ctor: 'Avoid'};
 
+var _user$project$Messages$GenerateNewGate = function (a) {
+	return {ctor: 'GenerateNewGate', _0: a};
+};
+var _user$project$Messages$NewGate = function (a) {
+	return {ctor: 'NewGate', _0: a};
+};
 var _user$project$Messages$WebsocketMessage = function (a) {
 	return {ctor: 'WebsocketMessage', _0: a};
 };
-var _user$project$Messages$KeyMsg = function (a) {
-	return {ctor: 'KeyMsg', _0: a};
+var _user$project$Messages$KeyDown = function (a) {
+	return {ctor: 'KeyDown', _0: a};
 };
-var _user$project$Messages$Foo = {ctor: 'Foo'};
+var _user$project$Messages$KeyUp = function (a) {
+	return {ctor: 'KeyUp', _0: a};
+};
 
+var _user$project$View$bgStyle = function (humidity) {
+	return {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'color', _1: 'red'},
+		_1: {ctor: '[]'}
+	};
+};
+var _user$project$View$raindrops = function (humidity) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(humidity)),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$playAreaWidth = 1000;
+var _user$project$View$playAreaHeight = 700;
+var _user$project$View$renderGateInner = F2(
+	function (gate, cssClass) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('gate'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'left',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(gate.x),
+									'px')
+							},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class(cssClass),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'top', _1: '0'},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'height',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(gate.openingStart),
+												'px')
+										},
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class(cssClass),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$style(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'top',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(gate.openingEnd),
+												'px')
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'height',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(_user$project$View$playAreaHeight - gate.openingEnd),
+													'px')
+											},
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$View$renderHitGate = function (gate) {
+	return A2(_user$project$View$renderGateInner, gate, 'hit-gate');
+};
+var _user$project$View$renderAvoidGate = function (gate) {
+	return A2(_user$project$View$renderGateInner, gate, 'avoid-gate');
+};
+var _user$project$View$renderGate = function (gate) {
+	return _elm_lang$core$Native_Utils.eq(gate.contactType, _user$project$Model$Hit) ? _user$project$View$renderHitGate(gate) : _user$project$View$renderAvoidGate(gate);
+};
+var _user$project$View$renderGates = function (gates) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, _user$project$View$renderGate, gates));
+};
 var _user$project$View$getColorHex = function (c) {
 	var _p0 = c;
 	if (_p0.ctor === 'Red') {
@@ -9627,10 +10290,21 @@ var _user$project$View$getStyle = function (model) {
 								_0: 'left',
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(model.x),
+									_elm_lang$core$Basics$toString(model.pos.x),
 									'px')
 							},
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'top',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(model.pos.y),
+										'px')
+								},
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -9640,7 +10314,16 @@ var _user$project$View$getStyle = function (model) {
 var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('bg'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					_user$project$View$bgStyle(model.humidity)),
+				_1: {ctor: '[]'}
+			}
+		},
 		{
 			ctor: '::',
 			_0: A2(
@@ -9669,47 +10352,231 @@ var _user$project$View$view = function (model) {
 						_0: _elm_lang$html$Html$text(model.message),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								_elm_lang$core$Basics$toString(model.pos)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(model.code)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _user$project$View$renderGates(model.gates),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
 			}
 		});
 };
 
-var _user$project$Ws_Updates$updateSize = F2(
-	function (wsData, model) {
-		var _p0 = A2(_elm_lang$core$Json_Decode$decodeString, _elm_lang$core$Json_Decode$int, wsData);
-		if (_p0.ctor === 'Err') {
-			return model;
-		} else {
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{size: _p0._0});
-		}
-	});
-var _user$project$Ws_Updates$WsData = F2(
+var _user$project$Ws_CustomJson_Decoders$encodeVector = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'x',
+				_1: _elm_lang$core$Json_Encode$float(record.x)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'y',
+					_1: _elm_lang$core$Json_Encode$float(record.y)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$encodeWsData = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'vector',
+				_1: _user$project$Ws_CustomJson_Decoders$encodeVector(record.vector)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'size',
+					_1: _elm_lang$core$Json_Encode$int(record.size)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$encodeIncomingWsMessage = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string(record.name)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'data',
+					_1: _user$project$Ws_CustomJson_Decoders$encodeWsData(record.data)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$IncomingWsMessage = F2(
 	function (a, b) {
 		return {name: a, data: b};
 	});
-var _user$project$Ws_Updates$wsDataDecoder = A3(
+var _user$project$Ws_CustomJson_Decoders$Vector = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _user$project$Ws_CustomJson_Decoders$decodeVector = A3(
 	_elm_lang$core$Json_Decode$map2,
-	_user$project$Ws_Updates$WsData,
+	_user$project$Ws_CustomJson_Decoders$Vector,
+	A2(_elm_lang$core$Json_Decode$field, 'x', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'y', _elm_lang$core$Json_Decode$float));
+var _user$project$Ws_CustomJson_Decoders$WsData = F3(
+	function (a, b, c) {
+		return {vector: a, size: b, humidity: c};
+	});
+var _user$project$Ws_CustomJson_Decoders$decodeWsData = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Ws_CustomJson_Decoders$WsData,
+	A2(_elm_lang$core$Json_Decode$field, 'vector', _user$project$Ws_CustomJson_Decoders$decodeVector),
+	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'humidity', _elm_lang$core$Json_Decode$int));
+var _user$project$Ws_CustomJson_Decoders$decodeIncomingWsMessage = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$Ws_CustomJson_Decoders$IncomingWsMessage,
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'data', _elm_lang$core$Json_Decode$string));
+	A2(_elm_lang$core$Json_Decode$field, 'data', _user$project$Ws_CustomJson_Decoders$decodeWsData));
+
 var _user$project$Ws_Updates$updateModelWithWsData = F2(
 	function (s, model) {
-		var _p1 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Ws_Updates$wsDataDecoder, s);
-		if (_p1.ctor === 'Err') {
-			return model;
+		var _p0 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Ws_CustomJson_Decoders$decodeIncomingWsMessage, s);
+		if (_p0.ctor === 'Err') {
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					message: A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(_p0._0),
+						s)
+				});
 		} else {
-			var _p3 = _p1._0;
-			var _p2 = _p3.name;
-			if (_p2 === 'size') {
-				return A2(_user$project$Ws_Updates$updateSize, _p3.data, model);
-			} else {
-				return model;
-			}
+			var _p1 = _p0._0;
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					size: _p1.data.size,
+					pos: A2(
+						_user$project$Model$Pos,
+						_elm_lang$core$Basics$floor(_p1.data.vector.x),
+						_elm_lang$core$Basics$floor(_p1.data.vector.y)),
+					humidity: _p1.data.humidity
+				});
 		}
 	});
 
+var _user$project$Update$generateANewGate = F3(
+	function (contactType, start, width) {
+		return {x: 1000, contactType: contactType, openingStart: start, openingEnd: start + width};
+	});
+var _user$project$Update$updateGate = function (gate) {
+	return _elm_lang$core$Native_Utils.update(
+		gate,
+		{x: gate.x - 1});
+};
+var _user$project$Update$updateGates = function (model) {
+	var updatedGates = A2(_elm_lang$core$List$map, _user$project$Update$updateGate, model.gates);
+	var filteredGates = A2(
+		_elm_lang$core$List$filter,
+		function (g) {
+			return _elm_lang$core$Native_Utils.cmp(g.x, 0) > 0;
+		},
+		updatedGates);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{gates: filteredGates});
+};
+var _user$project$Update$handleInput = F2(
+	function (code, model) {
+		var step = 5;
+		var _p0 = code;
+		switch (_p0) {
+			case 37:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{x: model.x - step});
+			case 39:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{x: model.x + step});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{code: code});
+		}
+	});
+var _user$project$Update$modifyWithInputs = function (model) {
+	return _elm_lang$core$Set$isEmpty(model.keysDown) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
+};
+var _user$project$Update$toListOfValues = function (ss) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (s) {
+			return _elm_lang$core$Json_Encode$int(s);
+		},
+		ss);
+};
+var _user$project$Update$keyCodesJson = function (keycodes) {
+	var ints = _elm_lang$core$Set$toList(keycodes);
+	var values = _user$project$Update$toListOfValues(ints);
+	return _elm_lang$core$Json_Encode$list(values);
+};
+var _user$project$Update$keyWsMessageToJson = function (keymsg) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string('keycodes')
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'data',
+					_1: _user$project$Update$keyCodesJson(keymsg.keys)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Update$decreaseSize = F2(
 	function (model, step) {
 		return (_elm_lang$core$Native_Utils.cmp(model.size, step * 5) > 0) ? _elm_lang$core$Native_Utils.update(
@@ -9723,8 +10590,8 @@ var _user$project$Update$increaseSize = F2(
 			{size: model.size + step}) : model;
 	});
 var _user$project$Update$flipColor = function (model) {
-	var _p0 = model.color;
-	if (_p0.ctor === 'Red') {
+	var _p1 = model.color;
+	if (_p1.ctor === 'Red') {
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{color: _user$project$Model$Blue});
@@ -9734,61 +10601,94 @@ var _user$project$Update$flipColor = function (model) {
 			{color: _user$project$Model$Red});
 	}
 };
+var _user$project$Update$KeyWsMessage = F2(
+	function (a, b) {
+		return {name: a, keys: b};
+	});
 var _user$project$Update$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'Foo':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'KeyMsg':
-				var _p3 = _p1._0;
-				var step = 5;
-				var _p2 = _p3;
-				switch (_p2) {
-					case 38:
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							A2(_user$project$Update$increaseSize, model, step),
-							{ctor: '[]'});
-					case 40:
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							A2(_user$project$Update$decreaseSize, model, step),
-							{ctor: '[]'});
-					case 37:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{x: model.x - step}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 39:
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{x: model.x + step}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 65:
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_user$project$Update$flipColor(model),
-							{ctor: '[]'});
-					default:
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								model,
-								{code: _p3}),
-							{ctor: '[]'});
-				}
-			default:
+	function (msg, m1) {
+		var model = _user$project$Update$updateGates(m1);
+		var cmd = A2(
+			_elm_lang$websocket$WebSocket$send,
+			'ws://192.168.0.5:5999',
+			A2(
+				_elm_lang$core$Json_Encode$encode,
+				0,
+				_user$project$Update$keyWsMessageToJson(
+					A2(_user$project$Update$KeyWsMessage, 'keycodes', model.keysDown))));
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'KeyDown':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							keysDown: A2(_elm_lang$core$Set$insert, _p2._0, model.keysDown)
+						}),
+					_1: cmd
+				};
+			case 'KeyUp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							keysDown: A2(_elm_lang$core$Set$remove, _p2._0, model.keysDown)
+						}),
+					_1: cmd
+				};
+			case 'WebsocketMessage':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					A2(_user$project$Ws_Updates$updateModelWithWsData, _p1._0, model),
-					{ctor: '[]'});
+					A2(_user$project$Ws_Updates$updateModelWithWsData, _p2._0, model),
+					{
+						ctor: '::',
+						_0: cmd,
+						_1: {ctor: '[]'}
+					});
+			case 'NewGate':
+				var rand = A5(
+					_elm_lang$core$Random$map4,
+					F4(
+						function (a, b, c, d) {
+							return {ctor: '_Tuple4', _0: a, _1: b, _2: c, _3: d};
+						}),
+					A2(_elm_lang$core$Random$int, 1, 10),
+					A2(
+						_elm_lang$core$Random$map,
+						function (b) {
+							return b ? _user$project$Model$Avoid : _user$project$Model$Hit;
+						},
+						_elm_lang$core$Random$bool),
+					A2(_elm_lang$core$Random$int, 0, 500),
+					A2(_elm_lang$core$Random$int, 100, 700));
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewGate, rand)
+				};
+			default:
+				var _p3 = _p2._0._0;
+				if (_p3 === 1) {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								gates: {
+									ctor: '::',
+									_0: A3(_user$project$Update$generateANewGate, _p2._0._1, _p2._0._2, _p2._0._3),
+									_1: model.gates
+								}
+							}),
+						{ctor: '[]'});
+				} else {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
 		}
 	});
 
@@ -9796,16 +10696,38 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$presses(_user$project$Messages$KeyMsg),
+			_0: _elm_lang$keyboard$Keyboard$downs(_user$project$Messages$KeyDown),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://192.168.0.5:5999', _user$project$Messages$WebsocketMessage),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$Messages$KeyUp),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://192.168.0.5:5999', _user$project$Messages$WebsocketMessage),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		});
 };
 
-var _user$project$Main$initialModel = A5(_user$project$Model$Model, 50, 100, 0, _user$project$Model$Blue, '');
+var _user$project$Main$initialModel = {
+	size: 50,
+	humidity: 0,
+	code: 0,
+	color: _user$project$Model$Blue,
+	message: '',
+	pos: A2(_user$project$Model$Pos, 120, 150),
+	keysDown: _elm_lang$core$Set$empty,
+	raindrops: {ctor: '[]'},
+	gates: {
+		ctor: '::',
+		_0: {x: 100, contactType: _user$project$Model$Avoid, openingStart: 40, openingEnd: 150},
+		_1: {ctor: '[]'}
+	}
+};
 var _user$project$Main$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],
 	_user$project$Main$initialModel,

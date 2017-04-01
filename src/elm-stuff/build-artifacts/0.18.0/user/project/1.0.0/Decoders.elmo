@@ -1,4 +1,4 @@
-var _user$project$Main$encodeVector = function (record) {
+var _user$project$Decoders$encodeVector = function (record) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -18,14 +18,14 @@ var _user$project$Main$encodeVector = function (record) {
 			}
 		});
 };
-var _user$project$Main$encodeWsData = function (record) {
+var _user$project$Decoders$encodeWsData = function (record) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'vector',
-				_1: _user$project$Main$encodeVector(record.vector)
+				_1: _user$project$Decoders$encodeVector(record.vector)
 			},
 			_1: {
 				ctor: '::',
@@ -38,7 +38,7 @@ var _user$project$Main$encodeWsData = function (record) {
 			}
 		});
 };
-var _user$project$Main$encodeIncomingWsMessage = function (record) {
+var _user$project$Decoders$encodeIncomingWsMessage = function (record) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -52,36 +52,36 @@ var _user$project$Main$encodeIncomingWsMessage = function (record) {
 				_0: {
 					ctor: '_Tuple2',
 					_0: 'data',
-					_1: _user$project$Main$encodeWsData(record.data)
+					_1: _user$project$Decoders$encodeWsData(record.data)
 				},
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Main$IncomingWsMessage = F2(
+var _user$project$Decoders$IncomingWsMessage = F2(
 	function (a, b) {
 		return {name: a, data: b};
 	});
-var _user$project$Main$Vector = F2(
+var _user$project$Decoders$Vector = F2(
 	function (a, b) {
 		return {x: a, y: b};
 	});
-var _user$project$Main$decodeVector = A3(
+var _user$project$Decoders$decodeVector = A3(
 	_elm_lang$core$Json_Decode$map2,
-	_user$project$Main$Vector,
+	_user$project$Decoders$Vector,
 	A2(_elm_lang$core$Json_Decode$field, 'x', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'y', _elm_lang$core$Json_Decode$int));
-var _user$project$Main$WsData = F2(
+var _user$project$Decoders$WsData = F2(
 	function (a, b) {
 		return {vector: a, size: b};
 	});
-var _user$project$Main$decodeWsData = A3(
+var _user$project$Decoders$decodeWsData = A3(
 	_elm_lang$core$Json_Decode$map2,
-	_user$project$Main$WsData,
-	A2(_elm_lang$core$Json_Decode$field, 'vector', _user$project$Main$decodeVector),
+	_user$project$Decoders$WsData,
+	A2(_elm_lang$core$Json_Decode$field, 'vector', _user$project$Decoders$decodeVector),
 	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int));
-var _user$project$Main$decodeIncomingWsMessage = A3(
+var _user$project$Decoders$decodeIncomingWsMessage = A3(
 	_elm_lang$core$Json_Decode$map2,
-	_user$project$Main$IncomingWsMessage,
+	_user$project$Decoders$IncomingWsMessage,
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'data', _user$project$Main$decodeWsData));
+	A2(_elm_lang$core$Json_Decode$field, 'data', _user$project$Decoders$decodeWsData));

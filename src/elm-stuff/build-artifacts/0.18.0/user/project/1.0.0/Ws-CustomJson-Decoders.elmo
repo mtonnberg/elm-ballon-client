@@ -1,0 +1,88 @@
+var _user$project$Ws_CustomJson_Decoders$encodeVector = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'x',
+				_1: _elm_lang$core$Json_Encode$float(record.x)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'y',
+					_1: _elm_lang$core$Json_Encode$float(record.y)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$encodeWsData = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'vector',
+				_1: _user$project$Ws_CustomJson_Decoders$encodeVector(record.vector)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'size',
+					_1: _elm_lang$core$Json_Encode$int(record.size)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$encodeIncomingWsMessage = function (record) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string(record.name)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'data',
+					_1: _user$project$Ws_CustomJson_Decoders$encodeWsData(record.data)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Ws_CustomJson_Decoders$IncomingWsMessage = F2(
+	function (a, b) {
+		return {name: a, data: b};
+	});
+var _user$project$Ws_CustomJson_Decoders$Vector = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _user$project$Ws_CustomJson_Decoders$decodeVector = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$Ws_CustomJson_Decoders$Vector,
+	A2(_elm_lang$core$Json_Decode$field, 'x', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'y', _elm_lang$core$Json_Decode$float));
+var _user$project$Ws_CustomJson_Decoders$WsData = F3(
+	function (a, b, c) {
+		return {vector: a, size: b, humidity: c};
+	});
+var _user$project$Ws_CustomJson_Decoders$decodeWsData = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Ws_CustomJson_Decoders$WsData,
+	A2(_elm_lang$core$Json_Decode$field, 'vector', _user$project$Ws_CustomJson_Decoders$decodeVector),
+	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'humidity', _elm_lang$core$Json_Decode$int));
+var _user$project$Ws_CustomJson_Decoders$decodeIncomingWsMessage = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$Ws_CustomJson_Decoders$IncomingWsMessage,
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'data', _user$project$Ws_CustomJson_Decoders$decodeWsData));
