@@ -9,5 +9,6 @@ type Msg
     | KeyDown Keyboard.KeyCode
     | WebsocketMessage String
     | NewGate Time
+    | NewStar Time
     | Tick Time
     | GenerateNewGate (Int, ContactType, Int, Int) 

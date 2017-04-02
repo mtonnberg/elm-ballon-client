@@ -24,13 +24,17 @@ initialModel = {
         , pos = Pos 120 150
         , keysDown = Set.empty
         , raindrops = []
-        , gates =  [{
-              x = 1000
-            , contactType = Avoid
-            , openingStart = 40
-            , openingEnd = 150
-        }]
+        , gates =  [
+        --   {
+        --       x = 1000
+        --     , contactType = Avoid
+        --     , openingStart = 40
+        --     , openingEnd = 150
+        -- }
+        ]
+        , stars = []
         , isAlive = True
+        , score = 0
     }
 
 init : (Model, Cmd Msg)

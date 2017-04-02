@@ -8,10 +8,14 @@ import Time exposing (Time, second)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+  -- let 
+  --   tickLength = if model % 10 == 0 then 100 else 1000
+  -- in 
   Sub.batch
         [ Keyboard.downs KeyDown
         , Keyboard.ups KeyUp
-        -- , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
+        , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
         , Time.every second (NewGate)
-        -- , Time.every Time.millisecond (Tick)
+        , Time.every 16 (Tick)
+        , Time.every second (NewStar)
         ]

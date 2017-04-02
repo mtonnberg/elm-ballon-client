@@ -28,6 +28,12 @@ type alias Gate =
         , openingEnd : Int
     }
 
+type alias Star = 
+    {
+          pos : Pos
+        , size : Int
+    }
+
 type alias Model = 
     {
           size : Int
@@ -39,5 +45,7 @@ type alias Model =
         , keysDown : Set KeyCode
         , raindrops : List Raindrop
         , gates : List Gate
+        , stars : List Star
         , isAlive : Bool
+        , score : Int
     }

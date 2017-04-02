@@ -133,6 +133,8 @@ checkIfAlive model =
     else
         model
 
+
+-- updateInputs msg model
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg m1 =
     let
@@ -164,4 +166,5 @@ update msg m1 =
             1 -> { model | gates = (generateANewGate contactType start width) :: model.gates } ! []
             _ -> model ! []
         Tick time -> model ! []
+        NewStar time -> model ! []
     False -> model ! []

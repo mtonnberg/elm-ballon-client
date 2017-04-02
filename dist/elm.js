@@ -10088,6 +10088,10 @@ var _user$project$Model$Gate = F4(
 	function (a, b, c, d) {
 		return {x: a, contactType: b, openingStart: c, openingEnd: d};
 	});
+var _user$project$Model$Star = F2(
+	function (a, b) {
+		return {pos: a, size: b};
+	});
 var _user$project$Model$Model = function (a) {
 	return function (b) {
 		return function (c) {
@@ -10098,7 +10102,11 @@ var _user$project$Model$Model = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {size: a, humidity: b, code: c, color: d, message: e, pos: f, keysDown: g, raindrops: h, gates: i, isAlive: j};
+										return function (k) {
+											return function (l) {
+												return {size: a, humidity: b, code: c, color: d, message: e, pos: f, keysDown: g, raindrops: h, gates: i, stars: j, isAlive: k, score: l};
+											};
+										};
 									};
 								};
 							};
@@ -10119,6 +10127,9 @@ var _user$project$Messages$GenerateNewGate = function (a) {
 };
 var _user$project$Messages$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Messages$NewStar = function (a) {
+	return {ctor: 'NewStar', _0: a};
 };
 var _user$project$Messages$NewGate = function (a) {
 	return {ctor: 'NewGate', _0: a};
@@ -10543,7 +10554,14 @@ var _user$project$Ws_Updates$updateModelWithWsData = F2(
 			var _p1 = _p0._0;
 			return _elm_lang$core$Native_Utils.update(
 				model,
-				{size: _p1.data.size, humidity: _p1.data.humidity});
+				{
+					size: _p1.data.size,
+					pos: A2(
+						_user$project$Model$Pos,
+						_elm_lang$core$Basics$floor(_p1.data.vector.x),
+						_elm_lang$core$Basics$floor(_p1.data.vector.y)),
+					humidity: _p1.data.humidity
+				});
 		}
 	});
 
@@ -10790,6 +10808,11 @@ var _user$project$Update$update = F2(
 							model,
 							{ctor: '[]'});
 					}
+				case 'Tick':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				default:
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10814,8 +10837,20 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$Messages$KeyUp),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
-					_1: {ctor: '[]'}
+					_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://192.168.0.5:5999', _user$project$Messages$WebsocketMessage),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$core$Time$every, 16, _user$project$Messages$Tick),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewStar),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
 				}
 			}
 		});
@@ -10830,12 +10865,10 @@ var _user$project$Main$initialModel = {
 	pos: A2(_user$project$Model$Pos, 120, 150),
 	keysDown: _elm_lang$core$Set$empty,
 	raindrops: {ctor: '[]'},
-	gates: {
-		ctor: '::',
-		_0: {x: 1000, contactType: _user$project$Model$Avoid, openingStart: 40, openingEnd: 150},
-		_1: {ctor: '[]'}
-	},
-	isAlive: true
+	gates: {ctor: '[]'},
+	stars: {ctor: '[]'},
+	isAlive: true,
+	score: 0
 };
 var _user$project$Main$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],
