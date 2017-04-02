@@ -10088,10 +10088,27 @@ var _user$project$Model$Gate = F4(
 	function (a, b, c, d) {
 		return {x: a, contactType: b, openingStart: c, openingEnd: d};
 	});
-var _user$project$Model$Model = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {size: a, humidity: b, code: c, color: d, message: e, pos: f, keysDown: g, raindrops: h, gates: i};
-	});
+var _user$project$Model$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {size: a, humidity: b, code: c, color: d, message: e, pos: f, keysDown: g, raindrops: h, gates: i, isAlive: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var _user$project$Model$Red = {ctor: 'Red'};
 var _user$project$Model$Blue = {ctor: 'Blue'};
 var _user$project$Model$Hit = {ctor: 'Hit'};
@@ -10116,6 +10133,20 @@ var _user$project$Messages$KeyUp = function (a) {
 	return {ctor: 'KeyUp', _0: a};
 };
 
+var _user$project$View$renderGameoverText = function (isAlive) {
+	return isAlive ? _elm_lang$html$Html$text('') : A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('game-over-text'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('💀💀💀 Game over 💀💀💀'),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$View$bgStyle = function (humidity) {
 	return {
 		ctor: '::',
@@ -10314,6 +10345,24 @@ var _user$project$View$getStyle = function (model) {
 			}
 		});
 };
+var _user$project$View$renderPlayer = function (model) {
+	return model.isAlive ? A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _user$project$View$getStyle(model),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('box'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src('/assets/red-balloon-hi.png'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'}) : _elm_lang$html$Html$text('');
+};
 var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10329,22 +10378,7 @@ var _user$project$View$view = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _user$project$View$getStyle(model),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('box'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$src('/assets/red-balloon-hi.png'),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{ctor: '[]'}),
+			_0: _user$project$View$renderPlayer(model),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -10379,8 +10413,24 @@ var _user$project$View$view = function (model) {
 							}),
 						_1: {
 							ctor: '::',
-							_0: _user$project$View$renderGates(model.gates),
-							_1: {ctor: '[]'}
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(model.isAlive)),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _user$project$View$renderGameoverText(model.isAlive),
+								_1: {
+									ctor: '::',
+									_0: _user$project$View$renderGates(model.gates),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					}
 				}
@@ -10493,17 +10543,32 @@ var _user$project$Ws_Updates$updateModelWithWsData = F2(
 			var _p1 = _p0._0;
 			return _elm_lang$core$Native_Utils.update(
 				model,
-				{
-					size: _p1.data.size,
-					pos: A2(
-						_user$project$Model$Pos,
-						_elm_lang$core$Basics$floor(_p1.data.vector.x),
-						_elm_lang$core$Basics$floor(_p1.data.vector.y)),
-					humidity: _p1.data.humidity
-				});
+				{size: _p1.data.size, humidity: _p1.data.humidity});
 		}
 	});
 
+var _user$project$Update$doesCollide = F3(
+	function (s, pos, gate) {
+		var size = _elm_lang$core$Basics$toFloat(s);
+		var playerleftBoundery = pos.x - _elm_lang$core$Basics$floor(size / 2.0);
+		var playerrightBoundery = pos.x + _elm_lang$core$Basics$floor(size / 2.0);
+		var playerUpperBoundery = pos.y - _elm_lang$core$Basics$floor(size / 2.0);
+		var playerLowerBoundery = pos.y + _elm_lang$core$Basics$floor(size / 2.0);
+		return _elm_lang$core$Native_Utils.eq(gate.contactType, _user$project$Model$Avoid) && ((((_elm_lang$core$Native_Utils.cmp(playerleftBoundery, gate.x) < 0) && (_elm_lang$core$Native_Utils.cmp(playerrightBoundery, gate.x) > -1)) || ((_elm_lang$core$Native_Utils.cmp(playerleftBoundery, gate.x) > -1) && (_elm_lang$core$Native_Utils.cmp(playerleftBoundery, gate.x + 20) < 1))) && ((_elm_lang$core$Native_Utils.cmp(playerUpperBoundery, gate.openingStart) < 1) || (_elm_lang$core$Native_Utils.cmp(playerLowerBoundery, gate.openingEnd) > -1)));
+	});
+var _user$project$Update$doesCollideWithAnyGate = function (model) {
+	return A2(
+		_elm_lang$core$List$any,
+		A2(_user$project$Update$doesCollide, model.size, model.pos),
+		model.gates);
+};
+var _user$project$Update$checkIfAlive = function (model) {
+	return model.isAlive ? _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			isAlive: !_user$project$Update$doesCollideWithAnyGate(model)
+		}) : model;
+};
 var _user$project$Update$generateANewGate = F3(
 	function (contactType, start, width) {
 		return {x: 1000, contactType: contactType, openingStart: start, openingEnd: start + width};
@@ -10619,7 +10684,7 @@ var _user$project$Update$handleInput = F2(
 		}
 	});
 var _user$project$Update$modifyWithInputs = function (model) {
-	return _elm_lang$core$Set$isEmpty(model.keysDown) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
+	return (_elm_lang$core$Set$isEmpty(model.keysDown) || (!model.isAlive)) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
 };
 var _user$project$Update$flipColor = function (model) {
 	var _p1 = model.color;
@@ -10640,7 +10705,8 @@ var _user$project$Update$KeyWsMessage = F2(
 var _user$project$Update$update = F2(
 	function (msg, m1) {
 		var m2 = _user$project$Update$updateGates(m1);
-		var model = _user$project$Update$modifyWithInputs(m2);
+		var m3 = _user$project$Update$checkIfAlive(m2);
+		var model = _user$project$Update$modifyWithInputs(m3);
 		var cmd = A2(
 			_elm_lang$websocket$WebSocket$send,
 			'ws://192.168.0.5:5999',
@@ -10649,84 +10715,92 @@ var _user$project$Update$update = F2(
 				0,
 				_user$project$Update$keyWsMessageToJson(
 					A2(_user$project$Update$KeyWsMessage, 'keycodes', model.keysDown))));
-		var _p2 = msg;
-		switch (_p2.ctor) {
-			case 'KeyDown':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							keysDown: A2(_elm_lang$core$Set$insert, _p2._0, model.keysDown)
-						}),
-					_1: cmd
-				};
-			case 'KeyUp':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							keysDown: A2(_elm_lang$core$Set$remove, _p2._0, model.keysDown)
-						}),
-					_1: cmd
-				};
-			case 'WebsocketMessage':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					A2(_user$project$Ws_Updates$updateModelWithWsData, _p2._0, model),
-					{
-						ctor: '::',
-						_0: cmd,
-						_1: {ctor: '[]'}
-					});
-			case 'NewGate':
-				var rand = A5(
-					_elm_lang$core$Random$map4,
-					F4(
-						function (a, b, c, d) {
-							return {ctor: '_Tuple4', _0: a, _1: b, _2: c, _3: d};
-						}),
-					A2(_elm_lang$core$Random$int, 1, 10),
-					A2(
-						_elm_lang$core$Random$map,
-						function (b) {
-							return b ? _user$project$Model$Avoid : _user$project$Model$Hit;
-						},
-						_elm_lang$core$Random$bool),
-					A2(_elm_lang$core$Random$int, 0, 500),
-					A2(_elm_lang$core$Random$int, 100, 700));
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewGate, rand)
-				};
-			case 'GenerateNewGate':
-				var _p3 = _p2._0._0;
-				if (_p3 === 1) {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
+		var _p2 = model.isAlive;
+		if (_p2 === true) {
+			var _p3 = msg;
+			switch (_p3.ctor) {
+				case 'KeyDown':
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								gates: {
-									ctor: '::',
-									_0: A3(_user$project$Update$generateANewGate, _p2._0._1, _p2._0._2, _p2._0._3),
-									_1: model.gates
-								}
+								keysDown: A2(_elm_lang$core$Set$insert, _p3._0, model.keysDown)
 							}),
-						{ctor: '[]'});
-				} else {
+						_1: cmd
+					};
+				case 'KeyUp':
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								keysDown: A2(_elm_lang$core$Set$remove, _p3._0, model.keysDown)
+							}),
+						_1: cmd
+					};
+				case 'WebsocketMessage':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						A2(_user$project$Ws_Updates$updateModelWithWsData, _p3._0, model),
+						{
+							ctor: '::',
+							_0: cmd,
+							_1: {ctor: '[]'}
+						});
+				case 'NewGate':
+					var rand = A5(
+						_elm_lang$core$Random$map4,
+						F4(
+							function (a, b, c, d) {
+								return {ctor: '_Tuple4', _0: a, _1: b, _2: c, _3: d};
+							}),
+						A2(_elm_lang$core$Random$int, 1, 10),
+						A2(
+							_elm_lang$core$Random$map,
+							function (b) {
+								return b ? _user$project$Model$Avoid : _user$project$Model$Avoid;
+							},
+							_elm_lang$core$Random$bool),
+						A2(_elm_lang$core$Random$int, 0, 300),
+						A2(_elm_lang$core$Random$int, 200, 700));
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewGate, rand)
+					};
+				case 'GenerateNewGate':
+					var _p4 = _p3._0._0;
+					if (_p4 === 1) {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									gates: {
+										ctor: '::',
+										_0: A3(_user$project$Update$generateANewGate, _p3._0._1, _p3._0._2, _p3._0._3),
+										_1: model.gates
+									}
+								}),
+							{ctor: '[]'});
+					} else {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							{ctor: '[]'});
+					}
+				default:
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
-				}
-			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{ctor: '[]'});
+			}
+		} else {
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				model,
+				{ctor: '[]'});
 		}
 	});
 
@@ -10741,11 +10815,7 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 				_1: {
 					ctor: '::',
 					_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond, _user$project$Messages$Tick),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			}
 		});
@@ -10762,9 +10832,10 @@ var _user$project$Main$initialModel = {
 	raindrops: {ctor: '[]'},
 	gates: {
 		ctor: '::',
-		_0: {x: 100, contactType: _user$project$Model$Avoid, openingStart: 40, openingEnd: 150},
+		_0: {x: 1000, contactType: _user$project$Model$Avoid, openingStart: 40, openingEnd: 150},
 		_1: {ctor: '[]'}
-	}
+	},
+	isAlive: true
 };
 var _user$project$Main$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],

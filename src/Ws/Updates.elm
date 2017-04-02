@@ -9,6 +9,6 @@ updateModelWithWsData s model =
     Err e -> { model | message = (toString e) ++ s }                                                                                                                                                
     Ok  ws -> { model |
           size = ws.data.size
-        , pos = (Pos (floor ws.data.vector.x) (floor ws.data.vector.y))
+        -- , pos = (Pos (floor ws.data.vector.x) (floor ws.data.vector.y))
         , humidity = ws.data.humidity
         }

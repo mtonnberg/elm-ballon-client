@@ -89,12 +89,26 @@ bgStyle humidity =
     --         ++ "), url(/assets/bg.jpg) no-repeat center center fixed"
     --         )]
 
+renderGameoverText isAlive =
+    if isAlive then
+        text ""
+    else
+        div [class "game-over-text"] [text "💀💀💀 Game over 💀💀💀"]
+
+renderPlayer model =
+    if model.isAlive then
+        img [getStyle model, class "box", src "/assets/red-balloon-hi.png"] []
+    else
+        text ""
+
 view: Model -> Html Messages.Msg
 view model = div [class "bg", style (bgStyle model.humidity)]
     [
-        img [getStyle model, class "box", src "/assets/red-balloon-hi.png"] []
+        renderPlayer model
         , div [] [text (model.message)]
         , div [] [text (toString model.pos)]
         , div [] [text (toString model.code)]
+        , div [] [text (toString model.isAlive)]
+        , renderGameoverText model.isAlive
         , renderGates model.gates
     ]

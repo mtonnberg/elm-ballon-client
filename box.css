@@ -63,3 +63,16 @@ left: 0;
 .gate .avoid-gate {
     background: rgba(0, 0, 0, 0) url("/assets/blade.png") repeat scroll center center / 21px auto
 }
+
+.game-over-text {
+    font-size: 48px;
+    color: indianred;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    font-family: 'Press Start 2P', cursive;
+}

@@ -25,11 +25,12 @@ initialModel = {
         , keysDown = Set.empty
         , raindrops = []
         , gates =  [{
-              x = 100
+              x = 1000
             , contactType = Avoid
             , openingStart = 40
             , openingEnd = 150
         }]
+        , isAlive = True
     }
 
 init : (Model, Cmd Msg)

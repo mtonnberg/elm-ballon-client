@@ -39,4 +39,5 @@ type alias Model =
         , keysDown : Set KeyCode
         , raindrops : List Raindrop
         , gates : List Gate
+        , isAlive : Bool
     }

@@ -13,5 +13,5 @@ subscriptions model =
         , Keyboard.ups KeyUp
         -- , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
         , Time.every second (NewGate)
-        , Time.every Time.millisecond (Tick)
+        -- , Time.every Time.millisecond (Tick)
         ]
