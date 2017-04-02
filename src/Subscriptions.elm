@@ -17,5 +17,6 @@ subscriptions model =
         , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
         , Time.every second (NewGate)
         , Time.every 16 (Tick)
-        , Time.every second (NewStar)
+        , Time.every 6000 (NewStar)
+        -- , Time.every 1000 (LoosePoints)
         ]

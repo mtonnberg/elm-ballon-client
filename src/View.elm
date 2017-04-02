@@ -101,14 +101,25 @@ renderPlayer model =
     else
         text ""
 
+renderStar star =
+    div [
+          class "star"
+        , style [
+              ("left", (toString star.pos.x) ++ "px")
+            , ("top", (toString star.pos.y) ++ "px")]
+        ]
+        [text "🌞"]
+renderStars stars =
+    div [] <| List.map renderStar stars
 view: Model -> Html Messages.Msg
 view model = div [class "bg", style (bgStyle model.humidity)]
     [
         renderPlayer model
-        , div [] [text (model.message)]
-        , div [] [text (toString model.pos)]
-        , div [] [text (toString model.code)]
-        , div [] [text (toString model.isAlive)]
+        -- , div [] [text (model.message)]
+        -- , div [] [text (toString model.pos)]
+        -- , div [] [text (toString model.code)]
+        , div [class "score"] [text (toString model.score)]
         , renderGameoverText model.isAlive
         , renderGates model.gates
+        , renderStars model.stars
     ]

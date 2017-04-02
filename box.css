@@ -76,4 +76,20 @@ left: 0;
     width: 100%;
     z-index: 10;
     font-family: 'Press Start 2P', cursive;
+    top: 300px;
+}
+
+.star {
+    position:absolute;
+}
+
+.score {
+    font-size: 20px;
+    color: darkslategray;
+    z-index: 10;
+    font-family: 'Press Start 2P', cursive;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
 }

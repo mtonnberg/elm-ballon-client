@@ -12,3 +12,4 @@ type Msg
     | NewStar Time
     | Tick Time
     | GenerateNewGate (Int, ContactType, Int, Int) 
+    | GenerateNewStar (Int, Int)

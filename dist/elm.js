@@ -10088,9 +10088,9 @@ var _user$project$Model$Gate = F4(
 	function (a, b, c, d) {
 		return {x: a, contactType: b, openingStart: c, openingEnd: d};
 	});
-var _user$project$Model$Star = F2(
-	function (a, b) {
-		return {pos: a, size: b};
+var _user$project$Model$Star = F3(
+	function (a, b, c) {
+		return {pos: a, size: b, speed: c};
 	});
 var _user$project$Model$Model = function (a) {
 	return function (b) {
@@ -10122,6 +10122,9 @@ var _user$project$Model$Blue = {ctor: 'Blue'};
 var _user$project$Model$Hit = {ctor: 'Hit'};
 var _user$project$Model$Avoid = {ctor: 'Avoid'};
 
+var _user$project$Messages$GenerateNewStar = function (a) {
+	return {ctor: 'GenerateNewStar', _0: a};
+};
 var _user$project$Messages$GenerateNewGate = function (a) {
 	return {ctor: 'GenerateNewGate', _0: a};
 };
@@ -10144,6 +10147,53 @@ var _user$project$Messages$KeyUp = function (a) {
 	return {ctor: 'KeyUp', _0: a};
 };
 
+var _user$project$View$renderStar = function (star) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('star'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'left',
+							_1: A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(star.pos.x),
+								'px')
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'top',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(star.pos.y),
+									'px')
+							},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('🌞'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$renderStars = function (stars) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, _user$project$View$renderStar, stars));
+};
 var _user$project$View$renderGameoverText = function (isAlive) {
 	return isAlive ? _elm_lang$html$Html$text('') : A2(
 		_elm_lang$html$Html$div,
@@ -10394,54 +10444,27 @@ var _user$project$View$view = function (model) {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(model.message),
+						_0: _elm_lang$html$Html_Attributes$class('score'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(model.score)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								_elm_lang$core$Basics$toString(model.pos)),
-							_1: {ctor: '[]'}
-						}),
+					_0: _user$project$View$renderGameoverText(model.isAlive),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_elm_lang$core$Basics$toString(model.code)),
-								_1: {ctor: '[]'}
-							}),
+						_0: _user$project$View$renderGates(model.gates),
 						_1: {
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(model.isAlive)),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _user$project$View$renderGameoverText(model.isAlive),
-								_1: {
-									ctor: '::',
-									_0: _user$project$View$renderGates(model.gates),
-									_1: {ctor: '[]'}
-								}
-							}
+							_0: _user$project$View$renderStars(model.stars),
+							_1: {ctor: '[]'}
 						}
 					}
 				}
@@ -10565,7 +10588,42 @@ var _user$project$Ws_Updates$updateModelWithWsData = F2(
 		}
 	});
 
-var _user$project$Update$doesCollide = F3(
+var _user$project$Update$addStar = F3(
+	function (stars, y, speed) {
+		return {
+			ctor: '::',
+			_0: A3(
+				_user$project$Model$Star,
+				A2(_user$project$Model$Pos, 1000, y),
+				50,
+				speed),
+			_1: stars
+		};
+	});
+var _user$project$Update$doesCollideWithStar = F3(
+	function (size1, pos, star) {
+		var size = _elm_lang$core$Basics$toFloat(size1);
+		var playerleftBoundery = pos.x - _elm_lang$core$Basics$floor(size / 2.0);
+		var playerrightBoundery = pos.x + _elm_lang$core$Basics$floor(size / 2.0);
+		var playerUpperBoundery = pos.y - _elm_lang$core$Basics$floor(size / 2.0);
+		var playerLowerBoundery = pos.y + _elm_lang$core$Basics$floor(size / 2.0);
+		return (((_elm_lang$core$Native_Utils.cmp(playerleftBoundery, star.pos.x) < 0) && (_elm_lang$core$Native_Utils.cmp(playerrightBoundery, star.pos.x) > -1)) || ((_elm_lang$core$Native_Utils.cmp(playerleftBoundery, star.pos.x) > -1) && (_elm_lang$core$Native_Utils.cmp(playerleftBoundery, star.pos.x + star.size) < 1))) && (((_elm_lang$core$Native_Utils.cmp(playerUpperBoundery, star.pos.y) < 0) && (_elm_lang$core$Native_Utils.cmp(playerLowerBoundery, star.pos.y) > -1)) || ((_elm_lang$core$Native_Utils.cmp(playerUpperBoundery, star.pos.y) > -1) && (_elm_lang$core$Native_Utils.cmp(playerUpperBoundery, star.pos.y + star.size) < 1)));
+	});
+var _user$project$Update$doesCollideWithAnyStar = function (model) {
+	var _p0 = A2(
+		_elm_lang$core$List$partition,
+		A2(_user$project$Update$doesCollideWithStar, model.size, model.pos),
+		model.stars);
+	var capturedStars = _p0._0;
+	var starsToKeep = _p0._1;
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			stars: starsToKeep,
+			score: model.score + _elm_lang$core$List$length(capturedStars)
+		});
+};
+var _user$project$Update$doesCollideWithGate = F3(
 	function (s, pos, gate) {
 		var size = _elm_lang$core$Basics$toFloat(s);
 		var playerleftBoundery = pos.x - _elm_lang$core$Basics$floor(size / 2.0);
@@ -10577,7 +10635,7 @@ var _user$project$Update$doesCollide = F3(
 var _user$project$Update$doesCollideWithAnyGate = function (model) {
 	return A2(
 		_elm_lang$core$List$any,
-		A2(_user$project$Update$doesCollide, model.size, model.pos),
+		A2(_user$project$Update$doesCollideWithGate, model.size, model.pos),
 		model.gates);
 };
 var _user$project$Update$checkIfAlive = function (model) {
@@ -10591,6 +10649,27 @@ var _user$project$Update$generateANewGate = F3(
 	function (contactType, start, width) {
 		return {x: 1000, contactType: contactType, openingStart: start, openingEnd: start + width};
 	});
+var _user$project$Update$updateStar = function (star) {
+	var oldPos = star.pos;
+	var newPos = _elm_lang$core$Native_Utils.update(
+		oldPos,
+		{x: oldPos.x - star.speed});
+	return _elm_lang$core$Native_Utils.update(
+		star,
+		{pos: newPos});
+};
+var _user$project$Update$updateStars = function (model) {
+	var updatedStars = A2(_elm_lang$core$List$map, _user$project$Update$updateStar, model.stars);
+	var filteredStars = A2(
+		_elm_lang$core$List$filter,
+		function (g) {
+			return _elm_lang$core$Native_Utils.cmp(g.pos.x, 0) > 0;
+		},
+		updatedStars);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{stars: filteredStars});
+};
 var _user$project$Update$updateGate = function (gate) {
 	return _elm_lang$core$Native_Utils.update(
 		gate,
@@ -10657,8 +10736,8 @@ var _user$project$Update$handleInput = F2(
 	function (code, model) {
 		var oldPos = model.pos;
 		var step = 5;
-		var _p0 = code;
-		switch (_p0) {
+		var _p1 = code;
+		switch (_p1) {
 			case 84:
 				return A2(_user$project$Update$increaseSize, model, step);
 			case 71:
@@ -10705,8 +10784,8 @@ var _user$project$Update$modifyWithInputs = function (model) {
 	return (_elm_lang$core$Set$isEmpty(model.keysDown) || (!model.isAlive)) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
 };
 var _user$project$Update$flipColor = function (model) {
-	var _p1 = model.color;
-	if (_p1.ctor === 'Red') {
+	var _p2 = model.color;
+	if (_p2.ctor === 'Red') {
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{color: _user$project$Model$Blue});
@@ -10723,8 +10802,10 @@ var _user$project$Update$KeyWsMessage = F2(
 var _user$project$Update$update = F2(
 	function (msg, m1) {
 		var m2 = _user$project$Update$updateGates(m1);
-		var m3 = _user$project$Update$checkIfAlive(m2);
-		var model = _user$project$Update$modifyWithInputs(m3);
+		var m3 = _user$project$Update$updateStars(m2);
+		var m4 = _user$project$Update$checkIfAlive(m3);
+		var m5 = _user$project$Update$doesCollideWithAnyStar(m4);
+		var model = _user$project$Update$modifyWithInputs(m5);
 		var cmd = A2(
 			_elm_lang$websocket$WebSocket$send,
 			'ws://192.168.0.5:5999',
@@ -10733,17 +10814,17 @@ var _user$project$Update$update = F2(
 				0,
 				_user$project$Update$keyWsMessageToJson(
 					A2(_user$project$Update$KeyWsMessage, 'keycodes', model.keysDown))));
-		var _p2 = model.isAlive;
-		if (_p2 === true) {
-			var _p3 = msg;
-			switch (_p3.ctor) {
+		var _p3 = model.isAlive;
+		if (_p3 === true) {
+			var _p4 = msg;
+			switch (_p4.ctor) {
 				case 'KeyDown':
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								keysDown: A2(_elm_lang$core$Set$insert, _p3._0, model.keysDown)
+								keysDown: A2(_elm_lang$core$Set$insert, _p4._0, model.keysDown)
 							}),
 						_1: cmd
 					};
@@ -10753,14 +10834,14 @@ var _user$project$Update$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								keysDown: A2(_elm_lang$core$Set$remove, _p3._0, model.keysDown)
+								keysDown: A2(_elm_lang$core$Set$remove, _p4._0, model.keysDown)
 							}),
 						_1: cmd
 					};
 				case 'WebsocketMessage':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_user$project$Ws_Updates$updateModelWithWsData, _p3._0, model),
+						A2(_user$project$Ws_Updates$updateModelWithWsData, _p4._0, model),
 						{
 							ctor: '::',
 							_0: cmd,
@@ -10788,18 +10869,18 @@ var _user$project$Update$update = F2(
 						_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewGate, rand)
 					};
 				case 'GenerateNewGate':
-					var _p4 = _p3._0._0;
-					if (_p4 === 1) {
+					var _p5 = _p4._0._0;
+					if (_p5 === 1) {
+						var newGate = A3(_user$project$Update$generateANewGate, _p4._0._1, _p4._0._2, _p4._0._3);
+						var starsWithUpper = A3(_user$project$Update$addStar, model.stars, newGate.openingStart + 20, 1);
+						var starsWithGateStars = A3(_user$project$Update$addStar, starsWithUpper, newGate.openingEnd - 40, 1);
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
-									gates: {
-										ctor: '::',
-										_0: A3(_user$project$Update$generateANewGate, _p3._0._1, _p3._0._2, _p3._0._3),
-										_1: model.gates
-									}
+									gates: {ctor: '::', _0: newGate, _1: model.gates},
+									stars: starsWithGateStars
 								}),
 							{ctor: '[]'});
 					} else {
@@ -10813,11 +10894,30 @@ var _user$project$Update$update = F2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
+				case 'NewStar':
+					var yPos = A3(
+						_elm_lang$core$Random$map2,
+						F2(
+							function (a, b) {
+								return {ctor: '_Tuple2', _0: a, _1: b};
+							}),
+						A2(_elm_lang$core$Random$int, 1, 700),
+						A2(_elm_lang$core$Random$int, 1, 4));
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewStar, yPos)
+					};
 				default:
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
-						{ctor: '[]'});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								stars: A3(_user$project$Update$addStar, model.stars, _p4._0._0, _p4._0._1)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 			}
 		} else {
 			return A2(
@@ -10846,7 +10946,7 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 							_0: A2(_elm_lang$core$Time$every, 16, _user$project$Messages$Tick),
 							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewStar),
+								_0: A2(_elm_lang$core$Time$every, 6000, _user$project$Messages$NewStar),
 								_1: {ctor: '[]'}
 							}
 						}

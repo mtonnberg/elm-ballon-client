@@ -32,6 +32,7 @@ type alias Star =
     {
           pos : Pos
         , size : Int
+        , speed : Int
     }
 
 type alias Model = 

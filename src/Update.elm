@@ -74,7 +74,6 @@ modifyWithInputs model =
     else
         Set.foldl handleInput model model.keysDown
 
-updateGate : Gate -> Gate
 updateGate gate = { gate | x = gate.x-1 }
 
 updateGates : Model -> Model
@@ -85,6 +84,23 @@ updateGates model =
     in
     { model | gates = filteredGates }
 
+
+updateStar : Star -> Star
+updateStar star = 
+    let
+        oldPos = star.pos
+        newPos = { oldPos | x = oldPos.x-star.speed }
+    in
+      { star | pos = newPos }
+
+updateStars : Model -> Model
+updateStars model =
+    let
+      updatedStars = List.map updateStar model.stars
+      filteredStars = List.filter (\g -> g.pos.x > 0) updatedStars
+    in
+    { model | stars = filteredStars }
+
 generateANewGate : ContactType -> Int -> Int -> Gate
 generateANewGate contactType start width= {
           x = 1000
@@ -93,8 +109,8 @@ generateANewGate contactType start width= {
         , openingEnd = (start+width)
     }
 
-doesCollide : Int -> Pos -> Gate -> Bool
-doesCollide s pos gate =
+doesCollideWithGate : Int -> Pos -> Gate -> Bool
+doesCollideWithGate s pos gate =
     let
         size = toFloat s 
         playerleftBoundery = pos.x-(floor (size/2.0))
@@ -123,7 +139,51 @@ doesCollide s pos gate =
 
 doesCollideWithAnyGate : Model -> Bool
 doesCollideWithAnyGate model=
-    List.any (doesCollide model.size model.pos) model.gates
+    List.any (doesCollideWithGate model.size model.pos) model.gates
+
+doesCollideWithStar : Int -> Pos -> Star -> Bool
+doesCollideWithStar size1 pos star =
+    let
+        size = toFloat size1 
+        playerleftBoundery = pos.x-(floor (size/2.0))
+        playerrightBoundery = pos.x+(floor (size/2.0))
+        playerUpperBoundery = pos.y-(floor (size/2.0))
+        playerLowerBoundery = pos.y+(floor (size/2.0))
+    in
+    (    
+        (playerleftBoundery < star.pos.x
+        &&
+        (playerrightBoundery) >= star.pos.x
+        ) 
+        ||
+        (
+            playerleftBoundery >= star.pos.x
+            &&
+            playerleftBoundery <= (star.pos.x+star.size)
+        )
+    )
+    && 
+    (
+        (
+            playerUpperBoundery < star.pos.y
+            &&
+            (playerLowerBoundery) >= star.pos.y
+        ) 
+        ||
+        (
+            playerUpperBoundery >= star.pos.y
+            &&
+            playerUpperBoundery <= (star.pos.y+star.size)
+        )
+    )
+
+
+doesCollideWithAnyStar : Model -> Model
+doesCollideWithAnyStar model=
+    let
+      (capturedStars, starsToKeep) = List.partition (doesCollideWithStar model.size model.pos) model.stars
+    in
+    {model | stars = starsToKeep,  score = model.score + (List.length capturedStars)}
 
 checkIfAlive : Model -> Model
 checkIfAlive model =
@@ -133,14 +193,18 @@ checkIfAlive model =
     else
         model
 
+addStar stars y speed =
+    (Star (Pos 1000 y) 50 speed) :: stars
 
 -- updateInputs msg model
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg m1 =
     let
         m2 = updateGates m1
-        m3 = checkIfAlive m2
-        model = modifyWithInputs m3 
+        m3 = updateStars m2
+        m4 = checkIfAlive m3
+        m5 = doesCollideWithAnyStar m4
+        model = modifyWithInputs m5 
         cmd = WebSocket.send "ws://192.168.0.5:5999" (encode 0 (keyWsMessageToJson (KeyWsMessage  "keycodes" model.keysDown)))
     in
     case model.isAlive of
@@ -163,8 +227,19 @@ update msg m1 =
             (model, Random.generate GenerateNewGate rand )
         GenerateNewGate (r, contactType, start, width) -> 
             case r of
-            1 -> { model | gates = (generateANewGate contactType start width) :: model.gates } ! []
+            1 ->
+                let
+                  newGate = generateANewGate contactType start width
+                  starsWithUpper = addStar model.stars (newGate.openingStart + 20) 1
+                  starsWithGateStars = addStar starsWithUpper (newGate.openingEnd - 40) 1
+                in
+                  { model | gates = newGate :: model.gates, stars = starsWithGateStars } ! []
             _ -> model ! []
         Tick time -> model ! []
-        NewStar time -> model ! []
+        NewStar time -> 
+            let
+                yPos = Random.map2 (\a b -> (a,b)) (Random.int 1 700) (Random.int 1 4)
+            in
+            (model, Random.generate GenerateNewStar yPos)
+        GenerateNewStar (y, speed) -> ({model | stars = (addStar model.stars y speed)}, Cmd.none)
     False -> model ! []
