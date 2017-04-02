@@ -57,9 +57,9 @@ left: 0;
     width: 100%;
 }
 
-.gate .hit {
+.gate .hit-gate {
     background-color: darkslategrey;
 }
-.gate .avoid {
-    background-color:darksalmon;
+.gate .avoid-gate {
+    background: rgba(0, 0, 0, 0) url("/assets/blade.png") repeat scroll center center / 21px auto
 }

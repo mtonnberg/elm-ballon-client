@@ -11,6 +11,7 @@ subscriptions model =
   Sub.batch
         [ Keyboard.downs KeyDown
         , Keyboard.ups KeyUp
-        , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
+        -- , WebSocket.listen "ws://192.168.0.5:5999" WebsocketMessage
         , Time.every second (NewGate)
+        , Time.every Time.millisecond (Tick)
         ]

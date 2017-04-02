@@ -10100,6 +10100,9 @@ var _user$project$Model$Avoid = {ctor: 'Avoid'};
 var _user$project$Messages$GenerateNewGate = function (a) {
 	return {ctor: 'GenerateNewGate', _0: a};
 };
+var _user$project$Messages$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
 var _user$project$Messages$NewGate = function (a) {
 	return {ctor: 'NewGate', _0: a};
 };
@@ -10522,28 +10525,6 @@ var _user$project$Update$updateGates = function (model) {
 		model,
 		{gates: filteredGates});
 };
-var _user$project$Update$handleInput = F2(
-	function (code, model) {
-		var step = 5;
-		var _p0 = code;
-		switch (_p0) {
-			case 37:
-				return _elm_lang$core$Native_Utils.update(
-					model,
-					{x: model.x - step});
-			case 39:
-				return _elm_lang$core$Native_Utils.update(
-					model,
-					{x: model.x + step});
-			default:
-				return _elm_lang$core$Native_Utils.update(
-					model,
-					{code: code});
-		}
-	});
-var _user$project$Update$modifyWithInputs = function (model) {
-	return _elm_lang$core$Set$isEmpty(model.keysDown) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
-};
 var _user$project$Update$toListOfValues = function (ss) {
 	return A2(
 		_elm_lang$core$List$map,
@@ -10589,6 +10570,57 @@ var _user$project$Update$increaseSize = F2(
 			model,
 			{size: model.size + step}) : model;
 	});
+var _user$project$Update$handleInput = F2(
+	function (code, model) {
+		var oldPos = model.pos;
+		var step = 5;
+		var _p0 = code;
+		switch (_p0) {
+			case 84:
+				return A2(_user$project$Update$increaseSize, model, step);
+			case 71:
+				return A2(_user$project$Update$decreaseSize, model, step);
+			case 40:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						pos: _elm_lang$core$Native_Utils.update(
+							oldPos,
+							{y: oldPos.y + step})
+					});
+			case 38:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						pos: _elm_lang$core$Native_Utils.update(
+							oldPos,
+							{y: oldPos.y - step})
+					});
+			case 37:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						pos: _elm_lang$core$Native_Utils.update(
+							oldPos,
+							{x: oldPos.x - step})
+					});
+			case 39:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						pos: _elm_lang$core$Native_Utils.update(
+							oldPos,
+							{x: oldPos.x + step})
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{code: code});
+		}
+	});
+var _user$project$Update$modifyWithInputs = function (model) {
+	return _elm_lang$core$Set$isEmpty(model.keysDown) ? model : A3(_elm_lang$core$Set$foldl, _user$project$Update$handleInput, model, model.keysDown);
+};
 var _user$project$Update$flipColor = function (model) {
 	var _p1 = model.color;
 	if (_p1.ctor === 'Red') {
@@ -10607,7 +10639,8 @@ var _user$project$Update$KeyWsMessage = F2(
 	});
 var _user$project$Update$update = F2(
 	function (msg, m1) {
-		var model = _user$project$Update$updateGates(m1);
+		var m2 = _user$project$Update$updateGates(m1);
+		var model = _user$project$Update$modifyWithInputs(m2);
 		var cmd = A2(
 			_elm_lang$websocket$WebSocket$send,
 			'ws://192.168.0.5:5999',
@@ -10668,7 +10701,7 @@ var _user$project$Update$update = F2(
 					_0: model,
 					_1: A2(_elm_lang$core$Random$generate, _user$project$Messages$GenerateNewGate, rand)
 				};
-			default:
+			case 'GenerateNewGate':
 				var _p3 = _p2._0._0;
 				if (_p3 === 1) {
 					return A2(
@@ -10689,6 +10722,11 @@ var _user$project$Update$update = F2(
 						model,
 						{ctor: '[]'});
 				}
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 		}
 	});
 
@@ -10702,10 +10740,10 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 				_0: _elm_lang$keyboard$Keyboard$ups(_user$project$Messages$KeyUp),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://192.168.0.5:5999', _user$project$Messages$WebsocketMessage),
+					_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Messages$NewGate),
+						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond, _user$project$Messages$Tick),
 						_1: {ctor: '[]'}
 					}
 				}

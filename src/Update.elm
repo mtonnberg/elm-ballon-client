@@ -51,17 +51,23 @@ keyWsMessageToJson keymsg =
            , ("data", keyCodesJson keymsg.keys)
            ]
 
+handleInput : KeyCode -> Model -> Model
 handleInput code model = 
-    let step = 5
+    let 
+        step = 5
+        oldPos = model.pos
     in
     case code of
-    -- 38 ->  increaseSize model step
-    -- 40 ->  decreaseSize model step
-    37 ->  { model | x = model.x - step}
-    39 ->  { model | x = model.x + step}
+    84 ->  increaseSize model step
+    71 ->  decreaseSize model step
+    40 ->  { model | pos = { oldPos | y = oldPos.y + step } }
+    38 ->  { model | pos = { oldPos | y = oldPos.y - step } }
+    37 ->  { model | pos = { oldPos | x = oldPos.x - step } }
+    39 ->  { model | pos = { oldPos | x = oldPos.x + step } }
     -- 65 ->  flipColor model
-    _ ->   { model | code = code } -- WebSocket.send "ws://192.168.0.5:5999" "foo"
+    _ ->   { model | code = code }
 
+modifyWithInputs : Model -> Model
 modifyWithInputs model = 
     if Set.isEmpty model.keysDown then
         model
@@ -89,8 +95,8 @@ generateANewGate contactType start width= {
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg m1 =
     let
-        model = updateGates m1
-        -- model = modifyWithInputs m 
+        m2 = updateGates m1
+        model = modifyWithInputs m2 
         cmd = WebSocket.send "ws://192.168.0.5:5999" (encode 0 (keyWsMessageToJson (KeyWsMessage  "keycodes" model.keysDown)))
     in
     case msg of
@@ -116,3 +122,4 @@ update msg m1 =
         case r of
         1 -> { model | gates = (generateANewGate contactType start width) :: model.gates } ! []
         _ -> model ! []
+    Tick time -> model ! []
